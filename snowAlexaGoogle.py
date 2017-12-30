@@ -39,7 +39,7 @@ class VerboseCaller(object):
         """Wrapper factory."""
         def wrapper(wrappedObject):
             print ("Call of ", func.__name__)
-            #snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)
+            snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)
             func(wrappedObject)
         return wrapper
 
@@ -82,7 +82,7 @@ class CallBackHandler(object):
         """
         Reaktion auf ok Hal kontaktiere alexa voice service
         """
-        snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING)
+        # snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING)
         global detector, alexaConnector
         print("ok hal call")
         detector.terminate() # stop - we restart if we come back here
