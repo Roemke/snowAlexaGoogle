@@ -10,7 +10,9 @@ The wake word "ok Hal" connects to the [Amazon AVS service](https://github.com/a
 The wakeword  "input" connects to the Google speech api and the spoken words are "typed" by xdotool to the x11-environment.  
 I use a pi with touchscreen and by clicking inside an input field I can speak the command input to fill this  
 input field. If you say input löschen, the inputfield is cleared. A word followed by "los" will append a  
-carriage return.
+carriage return.  
+Meanwhile the programm is extended to some "buttons". I use it to control a webinterface to realize a click to  
+the buttons by the corresponding wake word. 
 
 ##Requirements:
 * pi with microphone and speaker

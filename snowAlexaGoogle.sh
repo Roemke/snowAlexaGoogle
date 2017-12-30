@@ -1,3 +1,4 @@
 #!/bin/bash
 export DISPLAY=:0
-python3 /home/pi/snowAlexaGoogle/snowAlexaGoogle.py okHal.pmdl input.pmdl 2>>/dev/null
+DIR=/home/pi/snowAlexaGoogle
+python3 $DIR/snowAlexaGoogle.py 2>>/dev/null
