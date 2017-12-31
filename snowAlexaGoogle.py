@@ -4,7 +4,7 @@ import inspect
 import os
 import signal
 import stt_google as stt
-from subprocess import run
+from subprocess import run,Popen
 import shlex
 import AmazonIPC as AI
 import json
@@ -55,7 +55,7 @@ class CallBackHandler(object):
         self.callbacks = []
         self.sensitivity = []
         self.buttons = []
-        self.noButtons = ['input','okhal'] # keine Buttons
+        self.noButtons = ['input','okhal','restartbrowser','close'] # keine Buttons
         self.buttonPositions = [];
         self.pmdlPath=path
         self.readPmdl()
@@ -118,9 +118,7 @@ class CallBackHandler(object):
                 else:
                     text += ' '
                 command = "xdotool type --delay 100 " + '"'+text+'"'
-            args = shlex.split(command)
-            run(args)
-            #print(args)
+            self.doCommand(command)    
         return
 
     def readButtonPositions(self):
@@ -136,9 +134,13 @@ class CallBackHandler(object):
         left = int(self.buttonPositions[name]['left'])
         top =  int(self.buttonPositions[name]['top'])
         command = "xdotool mousemove {} {} click 1".format((left+10),(top+5))
+        self.doCommand(command)        
+
+    def doCommand(self,command):
         print("do ",command)
         args = shlex.split(command)
-        run(args)
+        print("args: ",args)
+        run(args) #from subprocess
 
 
     def buttonAction(self,name):
@@ -151,6 +153,17 @@ class CallBackHandler(object):
 
     # handler for the buttons on my raspberry interface
     #
+    
+    @VerboseCaller()
+    def close(self):
+        command ="xdotool key alt+F4"
+        self.doCommand(command)
+
+    @VerboseCaller()
+    def restartbrowser(self):
+        self.doCommand("killall chromium-browser")
+        Popen(["chromium-browser", "--kiosk","localhost"])#subprocess run in background
+                    
     @VerboseCaller()
     def galerie(self):
         self.buttonAction(inspect.currentframe().f_code.co_name) # action with name of function
