@@ -71,7 +71,7 @@ class CallBackHandler(object):
                 callback = pmdl.split('.')[0].lower()
                 self.callbacks.append(getattr(self,callback))
                 if callback not in self.noButtons: self.buttons.append(callback)
-                if callback in ['okhal','gallery','fhem','reload']:
+                if callback in ['okhal','galerie','fhem','reload']:
                     self.sensitivity.append(0.49) # higher: better detection but more false positives
                 elif callback in ['koch']:
                     self.sensitivity.append(0.45)
@@ -127,7 +127,7 @@ class CallBackHandler(object):
         try:
             with open(self.buttonPositionsFile) as datafile:
                 self.buttonPositions  = json.load(datafile);
-                print("read json ",self.buttonPositions);
+                # print("read json ",self.buttonPositions);
                  #eg   self.buttonPositions['galerie']['left'])
         except:
             print ("can't read / open ", self.buttonPositionsFile)

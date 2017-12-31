@@ -62,14 +62,15 @@ class IPCConnection:
     def receiveUntilDone(self):
         if not self.connected:
             print("We have no connection")
-        else: #da er 4 bytes annimmt, sendet er auch 4?
-            received = bytearray(4)
+        else: #da er 4 bytes annimmt, sendet er auch 4? nein, unklar, lese byte weise habe auch 0 0 4 0 zurueck bekommen :(
+            received = bytearray(1)
             result = 0;
             while result != int(IPCommand.RESUME_WAKE_WORD_ENGINE):
                 result = 0
                 anzahl = self.sock.recv_into(received)
-                for b in received:
-                    result = result * 256 + int(b)
+                #for b in received:
+                #    result = result * 256 + int(b)
+                result=int.from_bytes([received[0]],byteorder='big')
                 print ("received ",anzahl," bytes: ", received, " Integer: ", result)
 
 
