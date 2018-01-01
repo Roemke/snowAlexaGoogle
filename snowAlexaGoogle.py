@@ -9,6 +9,7 @@ import shlex
 import AmazonIPC as AI
 import json
 import time
+import RPi.GPIO as GPIO #led statt beep wenn wake word detected
 
 # Demo code for listening to two hotwords at the same time, was the original from snowboy
 # modified code to call alexa via the ipc interface of the demo avs service of amazon okHal()
@@ -38,9 +39,13 @@ class VerboseCaller(object):
     def decorate(self, func):
         """Wrapper factory."""
         def wrapper(wrappedObject):
+            global outPin
+            GPIO.output(outPin, GPIO.HIGH)
             print ("Call of ", func.__name__)
-            snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)
+            # snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)            
             func(wrappedObject)
+            time.sleep(0.5) # halbe sekunde anlassen
+            GPIO.output(outPin, GPIO.LOW)            
         return wrapper
 
 class CallBackHandler(object):
@@ -71,10 +76,12 @@ class CallBackHandler(object):
                 callback = pmdl.split('.')[0].lower()
                 self.callbacks.append(getattr(self,callback))
                 if callback not in self.noButtons: self.buttons.append(callback)
-                if callback in ['okhal','galerie','fhem','reload']:
+                if callback in ['okhal','galerie','reload']:
                     self.sensitivity.append(0.49) # higher: better detection but more false positives
-                elif callback in ['chefkoch']:
-                    self.sensitivity.append(0.45)
+                elif callback in ['google','chefkoch']:
+                    self.sensitivity.append(0.3)
+                elif callback in ['close']:
+                    self.sensitivity.append(0.1)
                 else:
                     self.sensitivity.append(0.4)  # maybe need to adjust
 
@@ -83,8 +90,9 @@ class CallBackHandler(object):
         Reaktion auf ok Hal kontaktiere alexa voice service
         """
         # snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING)
-        global detector, alexaConnector
+        global detector, alexaConnector, outPin
         print("ok hal call")
+        GPIO.output(outPin, GPIO.HIGH)
         detector.terminate() # stop - we restart if we come back here
         if alexaConnector.connected:
             alexaConnector.sendCommand(AI.IPCommand.WAKE_WORD_DETECTED)
@@ -95,6 +103,7 @@ class CallBackHandler(object):
             if alexaConnector.connected:
                 alexaConnector.sendCommand(AI.IPCommand.WAKE_WORD_DETECTED)
                 alexaConnector.receiveUntilDone();
+        GPIO.output(outPin, GPIO.LOW)        
         return
 
     @VerboseCaller()
@@ -228,6 +237,10 @@ callBackHandler = CallBackHandler()
 #create detector
 detector = snowboydecoder.HotwordDetector(callBackHandler.models, sensitivity=callBackHandler.sensitivity)
 alexaConnector = AI.IPCConnection()
+outPin = 23
+GPIO.setmode(GPIO.BCM) # verwende gpio nummer nicht boardnummer
+GPIO.setup(outPin, GPIO.OUT) # 23 auf out setzen, ist pin 16, pin 14 hat gnd
+ 
 print('Listening... Press Ctrl+C to exit')
 # main loop
 # make sure you have the same numbers of callbacks and models
