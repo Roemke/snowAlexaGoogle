@@ -129,12 +129,23 @@ class HotwordDetector(object):
             return play_data, pyaudio.paContinue
 
         self.audio = pyaudio.PyAudio()
+        print("detector format = ",self.detector.BitsPerSample())
+        print("detector channels = ",self.detector.NumChannels())
+        print("detector rate = ",self.detector.SampleRate())
+        #strange, detector rate ist nicht zu gebrauche, muss auf die 
+        #44100 manuell gehen, das lief auch mal ohne hier einzugreifen
+        #mir ist unklar, was sich geändert hat. ute hat nur das mikro 
+        #ausgestoepselt
+        #ausserdem unten inputdevice mal dazu genommen
+        #er erkennt leider nichts oder alles - irgendwas ist da total daneben gegangen
+        #offenbar braucht snowboy die 16000, muss also meiner karte die 16000 bei bringen?
+
         self.stream_in = self.audio.open(
             input=True, output=False,
             format=self.audio.get_format_from_width(
                 self.detector.BitsPerSample() / 8),
             channels=self.detector.NumChannels(),
-            rate=self.detector.SampleRate(),
+            rate=self.detector.SampleRate(),#44100
             frames_per_buffer=2048,
             stream_callback=audio_callback)
 

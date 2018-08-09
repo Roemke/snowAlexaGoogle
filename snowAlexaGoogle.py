@@ -77,11 +77,11 @@ class CallBackHandler(object):
                 self.callbacks.append(getattr(self,callback))
                 if callback not in self.noButtons: self.buttons.append(callback)
                 if callback in ['okhal','galerie','reload']:
-                    self.sensitivity.append(0.49) # higher: better detection but more false positives
+                    self.sensitivity.append(0.49)#0.49) # higher: better detection but more false positives
                 elif callback in ['google','chefkoch']:
                     self.sensitivity.append(0.3)
                 elif callback in ['close']:
-                    self.sensitivity.append(0.1)
+                    self.sensitivity.append(0.2)
                 else:
                     self.sensitivity.append(0.4)  # maybe need to adjust
 
@@ -140,8 +140,8 @@ class CallBackHandler(object):
             print ("can't read / open ", self.buttonPositionsFile)
 
     def clickOnButton(self,name):
-        left = int(self.buttonPositions[name]['left'])
-        top =  int(self.buttonPositions[name]['top'])
+        left = int(float(self.buttonPositions[name]['left']))
+        top =  int(float(self.buttonPositions[name]['top']))
         command = "xdotool mousemove {} {} click 1".format((left+10),(top+5))
         self.doCommand(command)        
 
